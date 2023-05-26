@@ -3,34 +3,38 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include "MLX42.h"
+#include <memory.h>
 
-#define WIDTH 720
-#define HEIGHT 480
+#define WIDTH 256
+#define HEIGHT 256
 
-void my_keyhook(mlx_key_data_t keydata, void* param)
+static mlx_image_t	*g_img;
+
+void	hook(void* param)
 {
-	// If we PRESS the 'J' key, print "Hello".
-	if (keydata.key == MLX_KEY_J && keydata.action == MLX_PRESS)
-		puts("Hello ");
+	mlx_t* mlx;
 
-	// If we RELEASE the 'K' key, print "World".
-	if (keydata.key == MLX_KEY_K && keydata.action == MLX_RELEASE)
-		puts("World");
-
-	// If we HOLD the 'L' key, print "!".
-	if (keydata.key == MLX_KEY_L && keydata.action == MLX_REPEAT)
-		puts("!");
+	mlx = param;
+	if (mlx_is_key_down(mlx, MLX_KEY_ESCAPE))
+		mlx_close_window(mlx);
+	if (mlx_is_key_down(mlx, MLX_KEY_P))
+		mlx_delete_image(mlx, g_img);
 
 }
 
 int32_t	main(void)
 {
-	mlx_t* mlx;
+	mlx_t*    mlx;
 
-	if (!(mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true)))
-		return (EXIT_FAILURE);
-
-	mlx_key_hook(mlx, &my_keyhook, NULL);
+	mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true);
+	if (!mlx)
+		exit(EXIT_FAILURE);
+	g_img = mlx_new_image(mlx, 128, 128);
+	mlx_image_to_window(mlx, g_img, 0, 0);
+	for (int x = 0; x < g_img->width; x++)
+	for(int y= 0; y < g_img->height; y++)
+		mlx_put_pixel(g_img, x, y, rand() % RAND_MAX);
+	mlx_loop_hook(mlx, &hook, mlx);
 	mlx_loop(mlx);
 	mlx_terminate(mlx);
 	return (EXIT_SUCCESS);

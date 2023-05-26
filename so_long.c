@@ -52,8 +52,9 @@ int	main(void)
 	map = map_to_char(open("map.ber", O_RDONLY), &width, &height);
 	if (!map)
 		return (1);
+	char_to_window(map)
 	printf("\nwidth: %d\nheight: %d\nmap:\n%s\n", width, height, map);
-	mlx = mlx_init(width * 100, height * 100, "SO_LONG", false);
+	mlx = mlx_init(width * 96, height * 96, "SO_LONG", false);
 	mlx_loop(mlx);
 	return (0);
 }
