@@ -12,7 +12,7 @@ int	map_line_len(char *str)
 	return (i);
 }
 
-char	*map_to_char(int fd, int *width, int *height)
+char	*map_init(int fd, int *width, int *height)
 {
 	char	*map;
 	char	*check;
@@ -49,7 +49,7 @@ int	main(void)
 
 	width = 0;
 	height = 0;
-	map = map_to_char(open("map.ber", O_RDONLY), &width, &height);
+	map = map_init(open("map.ber", O_RDONLY), &width, &height);
 	if (!map)
 		return (1);
 	printf("\nwidth: %d\nheight: %d\nmap:\n%s\n", width, height, map);
