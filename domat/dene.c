@@ -4,65 +4,85 @@
 #include <math.h>
 #include "MLX42.h"
 
-#define WIDTH 1400
-#define HEIGHT 800
+// -----------------------------------------------------------------------------
+// Codam Coding College, Amsterdam @ 2022-2023 by W2Wizard.
+// See README in the root project for more information.
+// -----------------------------------------------------------------------------
 
-mlx_image_t* image;
+#define WIDTH 512
+#define HEIGHT 512
 
-void	move(void* param)
+static mlx_image_t* image;
+
+// -----------------------------------------------------------------------------
+
+int32_t ft_pixel(int32_t r, int32_t g, int32_t b, int32_t a)
+{
+    return (r << 24 | g << 16 | b << 8 | a);
+}
+
+void ft_randomize(void* param)
+{
+	for (int32_t i = 0; i < image->width; ++i)
+	{
+		for (int32_t y = 0; y < image->height; ++y)
+		{
+			uint32_t color = ft_pixel(
+				rand() % 0xFF, // R
+				rand() % 0xFF, // G
+				rand() % 0xFF, // B
+				rand() % 0xFF  // A
+			);
+			mlx_put_pixel(image, i, y, color);
+		}
+	}
+}
+
+void ft_hook(void* param)
 {
 	mlx_t* mlx = param;
 
-	if(mlx_is_key_down(mlx, MLX_KEY_ESCAPE))
+	if (mlx_is_key_down(mlx, MLX_KEY_ESCAPE))
 		mlx_close_window(mlx);
-	if(mlx_is_key_down(mlx, MLX_KEY_UP))
-		image->instances[0].y -= 2;
-	if(mlx_is_key_down(mlx, MLX_KEY_DOWN))
-		image->instances[0].y += 2;
-	if(mlx_is_key_down(mlx, MLX_KEY_RIGHT))
-		image->instances[0].x += 2;
-	if(mlx_is_key_down(mlx, MLX_KEY_LEFT))
-		image->instances[0].x -= 2;
+	if (mlx_is_key_down(mlx, MLX_KEY_UP))
+		image->instances[0].y -= 5;
+	if (mlx_is_key_down(mlx, MLX_KEY_DOWN))
+		image->instances[0].y += 5;
+	if (mlx_is_key_down(mlx, MLX_KEY_LEFT))
+		image->instances[0].x -= 5;
+	if (mlx_is_key_down(mlx, MLX_KEY_RIGHT))
+		image->instances[0].x += 5;
 }
 
-void to_to(mlx_t *mlx)
-{
-	mlx_image_to_window(mlx, image, 600, 5);
-	mlx_image_to_window(mlx, image, 5, 5);
-}
+// -----------------------------------------------------------------------------
 
-void map_to(mlx_t *mlx)
+int32_t main(int32_t argc, const char* argv[])
 {
-	to_to(mlx);
-}
-void mapmap(mlx_t *mlx)
-{
-	mlx_texture_t* texture = mlx_load_png("../textures/collectible.png");
-	image = mlx_texture_to_image(mlx, texture);
-}
+	mlx_t* mlx;
 
-void map_map(mlx_t *mlx)
-{
-	mapmap(mlx);
-}
+	// Gotta error check this stuff
+	if (!(mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true)))
+	{
+		puts(mlx_strerror(mlx_errno));
+		return(EXIT_FAILURE);
+	}
+	if (!(image = mlx_new_image(mlx, 128, 128)))
+	{
+		mlx_close_window(mlx);
+		puts(mlx_strerror(mlx_errno));
+		return(EXIT_FAILURE);
+	}
+	if (mlx_image_to_window(mlx, image, 0, 0) == -1)
+	{
+		mlx_close_window(mlx);
+		puts(mlx_strerror(mlx_errno));
+		return(EXIT_FAILURE);
+	}
+	
+	mlx_loop_hook(mlx, ft_randomize, mlx);
+	mlx_loop_hook(mlx, ft_hook, mlx);
 
-void map_depth(void)
-{
-	image->instances[0].z = 1;
-	image->instances[1].z = 0;
-	printf("%d\n%d", image->instances[0].z, image->instances[1].z);
-}
-
-int main()
-{
-	mlx_t* mlx = mlx_init(WIDTH, HEIGHT, "domates", true);
-	map_map(mlx);
-	map_to(mlx);
-	map_depth();
-	//texture = mlx_load_png("patat.png");
-	//image1 = mlx_texture_to_image(mlx, texture);
-
-	mlx_loop_hook(mlx, move, mlx);
 	mlx_loop(mlx);
 	mlx_terminate(mlx);
+	return (EXIT_SUCCESS);
 }

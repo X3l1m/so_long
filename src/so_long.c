@@ -1,4 +1,4 @@
-#include "so_long.h"
+#include <so_long.h>
 
 int map_to_window(t_map *map, char c, int y, int x)
 {
@@ -29,12 +29,16 @@ void	texture_to_image(t_map *map)
 
 	texture = mlx_load_png("./textures/wall.png");
 	map->wall = mlx_texture_to_image(map->mlx, texture);
+	mlx_delete_texture(texture);
 	texture = mlx_load_png("./textures/space.png");
 	map->space = mlx_texture_to_image(map->mlx, texture);
+	mlx_delete_texture(texture);
 	texture = mlx_load_png("./textures/player.png");
 	map->player = mlx_texture_to_image(map->mlx, texture);
+	mlx_delete_texture(texture);
 	texture = mlx_load_png("./textures/exit_close.png");
 	map->ext = mlx_texture_to_image(map->mlx, texture);
+	mlx_delete_texture(texture);
 	texture = mlx_load_png("./textures/collect.png");
 	map->collect = mlx_texture_to_image(map->mlx, texture);
 	mlx_delete_texture(texture);
@@ -61,7 +65,7 @@ int	map_init(t_map *map)
 	return (1);
 }
 
-int	map_depth(t_map *map)
+void	map_depth(t_map *map)
 {
 	int	i;
 
@@ -78,37 +82,84 @@ int	map_depth(t_map *map)
 		map->collect->instances[i++].z = 2;
 }
 
-void	move(void* param)
-{
-	t_map *map = param;
 
-	if(mlx_is_key_down(map->mlx, MLX_KEY_ESCAPE))
-		mlx_close_window(map->mlx);
-	if(mlx_is_key_down(map->mlx, MLX_KEY_UP))
-		map->player->instances[0].y -= 2;
-	if(mlx_is_key_down(map->mlx, MLX_KEY_DOWN))
-		map->player->instances[0].y += 2;
-	if(mlx_is_key_down(map->mlx, MLX_KEY_RIGHT))
-		map->player->instances[0].x += 2;
-	if(mlx_is_key_down(map->mlx, MLX_KEY_LEFT))
-		map->player->instances[0].x -= 2;
+
+void	move_up(t_map *map)
+{
+	if(check_there(map, '1', 0, -1))
+		return ;
+	map->player->instances[0].y -= 96;
+	map->move++;
+	ft_printf("%d\n", map->move);
+	collect_ext(map);
+}
+
+void	move_donw(t_map *map)
+{
+	if(check_there(map, '1', 0, 1))
+		return ;
+	map->player->instances[0].y += 96;
+	map->move++;
+	ft_printf("%d\n", map->move);
+	collect_ext(map);
+}
+
+void	move_right(t_map *map)
+{
+	if(check_there(map, '1', 1, 0))
+		return ;
+	map->player->instances[0].x += 96;
+	map->move++;
+	ft_printf("%d\n", map->move);
+	collect_ext(map);
+}
+
+void	move_left(t_map *map)
+{
+	if(check_there(map, '1', -1, 0))
+		return ;
+	map->player->instances[0].x -= 96;
+	map->move++;
+	ft_printf("%d\n", map->move);
+	collect_ext(map);
+}
+
+
+void	move(mlx_key_data_t key, void* param)
+{
+	t_map *map;
+
+	map = param;
+	if (key.action == MLX_PRESS)
+	{
+		if(key.key == MLX_KEY_UP)
+			move_up(map);
+		else if(key.key == MLX_KEY_DOWN)
+			move_donw(map);
+		else if(key.key == MLX_KEY_RIGHT)
+			move_right(map);
+		else if(key.key == MLX_KEY_LEFT)
+			move_left(map);
+		else if(key.key == MLX_KEY_ESCAPE)
+			mlx_close_window(map->mlx);
+	}
 }
 
 
 int	main()
 {
-	
 	t_map	map;
 	
+
 	map.ber = map_init_char(open("./map.ber", O_RDONLY), line_count(open("./map.ber", O_RDONLY)));
-	if (!map_size(&map))
+	if(!map_size(&map))
 		return (1);
-	
-	map.mlx = mlx_init(map.x * 96, map.y * 96, "SO_LONG", false);
+	map.mlx = mlx_init(map.x * 96, map.y * 96, "SO_LONG", true);
 	map_init(&map);
 	map_depth(&map);
-	//ft_printf("%d", map.player->instances[0].z);
-	mlx_loop_hook(map.mlx, move, &map);
+	
+	mlx_key_hook(map.mlx, &move, &map);
 	mlx_loop(map.mlx);
 	mlx_terminate(map.mlx);
+	system("leaks so_long");
 }
