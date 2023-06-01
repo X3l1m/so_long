@@ -1,5 +1,17 @@
-#ifndef SO_LONG
-# define  SO_LONG
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   so_long.h                                          :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2023/06/01 22:35:49 by seyildir      #+#    #+#                 */
+/*   Updated: 2023/06/01 22:35:49 by seyildir      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef SO_LONG_H
+# define  SO_LONG_H
 
 # include "libft/libft.h"
 # include "MLX42/include/MLX42/MLX42.h"
@@ -9,7 +21,7 @@
 # include <stdbool.h>
 # include <math.h>
 
-typedef struct
+typedef struct s_map
 {
 	mlx_t		*mlx;
 	mlx_image_t	*player;
@@ -20,21 +32,32 @@ typedef struct
 	char		**ber;
 	int			x;
 	int			y;
+	int			move;
 	int			c_cnt;
 	int			p_cnt;
 	int			s_cnt;
 	int			w_cnt;
 	int			e_cnt;
-	int			move;
 }	t_map;
 
-char**	map_init_char(int fd, int size);
+//map init
+int		map_init(t_map *map);
+//map build
+void	map_build(t_map *map);
+void	map_depth(t_map *map);
+//check stuck
+char	**goever(char **ber_c, int x, int y);
+char	**mapdup(t_map *map);
+void	find_player(char **ber_c, int *x, int *y);
+void	check_stuck(t_map *map);
+int		nongo(char **ber_c);
+//error exit
 void	so_error(t_map *map, int i);
-void	collect_ext(t_map *map);
+//move
+void	move(mlx_key_data_t key, void	*param);
+//collect
 int		check_there(t_map *map, char object, int x, int y);
-int		map_line_len(char *str, t_map *map);
-int 	map_size(t_map *map_info);
-int		line_count(int fd);
-void	free_ber(char **ber);
+void	change_ber(t_map *map, int x, int y);
+void	collect_ext(t_map *map);
 
 #endif

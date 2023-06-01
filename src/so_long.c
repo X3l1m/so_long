@@ -1,186 +1,68 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   so_long.c                                          :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2023/06/01 22:29:14 by seyildir      #+#    #+#                 */
+/*   Updated: 2023/06/01 22:29:14 by seyildir      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <so_long.h>
 
-int map_to_window(t_map *map, char c, int y, int x)
+int	line_count(int fd)
 {
-	
-	int	i;
+	int		i;
+	char	*str;
 
-	x *= 96;
-	y *= 96;
-	i = -1;
-	if(c == '1')
-		i = mlx_image_to_window(map->mlx, map->wall, x, y);
-	else if(c == '0' || c == 'P' || c == 'E' || c == 'C')
+	i = 0;
+	while (1)
 	{
-		i = mlx_image_to_window(map->mlx, map->space, x, y);
-		if (i < 0)
-			return (i);
-		if(c == 'C')
-			i = mlx_image_to_window(map->mlx, map->collect, x, y);
-		else if(c == 'P')
-			i = mlx_image_to_window(map->mlx, map->player, x, y);
-		else if(c == 'E')
-			i = mlx_image_to_window(map->mlx,map->ext, x, y);
+		str = get_next_line(fd);
+		if (!str)
+			break ;
+		free(str);
+		i++;
 	}
+	close(fd);
 	return (i);
 }
 
-void	texture_to_image(t_map *map)
+char	**ber_read(int fd, int size)
 {
-	mlx_texture_t	*texture;
-
-	texture = mlx_load_png("./textures/wall.png");
-	map->wall = mlx_texture_to_image(map->mlx, texture);
-	mlx_delete_texture(texture);
-	texture = mlx_load_png("./textures/space.png");
-	map->space = mlx_texture_to_image(map->mlx, texture);
-	mlx_delete_texture(texture);
-	texture = mlx_load_png("./textures/player.png");
-	map->player = mlx_texture_to_image(map->mlx, texture);
-	mlx_delete_texture(texture);
-	texture = mlx_load_png("./textures/exit_close.png");
-	map->ext = mlx_texture_to_image(map->mlx, texture);
-	mlx_delete_texture(texture);
-	texture = mlx_load_png("./textures/collect.png");
-	map->collect = mlx_texture_to_image(map->mlx, texture);
-	mlx_delete_texture(texture);
-	if (!map->wall || !map->space || !map->player || !map->ext || !map->collect || !texture)
-		so_error(map, 2);
-}
-
-void	map_init(t_map *map)
-{
-	int y;
-	int x;
-
-	y = 0;
-	texture_to_image(map);
-	while (map->y > y)
-	{
-		x = 0;
-		while (map->x > x)
-		{
-			if(map_to_window(map, map->ber[y][x], y, x) < 0)
-				so_error(map, 2);
-			x++;
-		}
-		y++;
-	}
-}
-
-void	map_depth(t_map *map)
-{
-	int	i;
+	int		i;
+	char	**ber;
 
 	i = 0;
-	map->player->instances[0].z = 3;
-	map->ext->instances[0].z = 1;
-	while (i < map->w_cnt)
-		map->wall->instances[i++].z = 1;
-	i = 0;
-	while (i < map->s_cnt)
-		map->space->instances[i++].z = 0;
-	i = 0;
-	while (i < map->c_cnt)
-		map->collect->instances[i++].z = 2;
-}
-
-
-
-
-
-char	**goever(char **ber_c, int x, int y)
-{
-	if (ber_c[y][x] != '1')
-	{
-		if (ber_c[y][x] != '1')
-			ber_c[y][x] = '1';
-		else
-			return (ber_c);
-		goever(ber_c, x + 1, y);
-		goever(ber_c, x - 1, y);
-		goever(ber_c, x, y + 1);
-		goever(ber_c, x, y - 1);
+	ber = ft_calloc(size + 1, sizeof(char *));
+	if (!ber)
+		exit (1);
+	while (1)
+	{	
+		ber[i] = get_next_line(fd);
+		if (!ber[i++])
+			break ;
 	}
-	return (ber_c);
+	close(fd);
+	return (ber);
 }
 
-int	nongo(char **ber_c)
+void	so_error(t_map *map, int i)
 {
-	int	x;
-	int	y;
-
-	y = 0;
-	while (ber_c[y])
+	if (i == 0)
+		ft_printf("Incorrect input!\n");
+	else if (i == 1)
+		ft_printf("Invalid map!\n");
+	else if (i == 2)
 	{
-		x = 0;
-		while (ber_c[y][x])
-		{
-			if (ber_c[y][x] != '0' && ber_c[y][x] != '1')
-				return (0);
-			x++;
-		}
-		y++;
+		mlx_close_window(map->mlx);
+		ft_printf("%s", mlx_strerror(mlx_errno));
 	}
-	return (1);
-}
-
-char **mapdup(t_map *map)
-{
-	char **ber_c;
-	int i;
-
-	i = 0;
-	ber_c = ft_calloc(map->y + 1, sizeof(char*));
-	if (!ber_c)
-		exit(1);
-	while (map->ber[i])
-	{
-		ber_c[i] = ft_strdup(map->ber[i]);
-		i++;
-	}
-	return (ber_c);
-}
-
-void	find_player(char **ber_c, int *x, int *y)
-{
-	*y = 0;
-	while (ber_c[*y])
-	{
-		*x = 0;
-		while (ber_c[*y][*x])
-		{
-			if (ber_c[*y][*x] == 'P')
-				return ;
-			(*x)++;
-		}
-		(*y)++;
-	}
-}
-
-void	free_ber(char **ber)
-{
-	int	i;
-
-	i = 0;
-	while (ber[i])
-		free(ber[i++]);
-	free(ber);
-}
-
-void	check_stuck(t_map *map)
-{
-	char	**ber_c;
-	int		x;
-	int		y;
-	int		er;
-
-	ber_c = mapdup(map);
-	find_player(ber_c, &x, &y);
-	er = nongo(goever(ber_c, x, y));
-	free_ber(ber_c);
-	if (!er)
-		so_error(map, 1);
+	else if (i == 3)
+		ft_printf("%s", mlx_strerror(mlx_errno));
+	exit(EXIT_FAILURE);
 }
 
 int	main(int argc, char **argv)
@@ -193,13 +75,13 @@ int	main(int argc, char **argv)
 	fd = open(argv[1], O_RDONLY);
 	if (fd < 0)
 		so_error(&map, 0);
-	map.ber = map_init_char(open(argv[1], O_RDONLY), line_count(fd));
-	map_size(&map);
+	map.ber = ber_read(open(argv[1], O_RDONLY), line_count(fd));
+	map_init(&map);
 	check_stuck(&map);
 	map.mlx = mlx_init(map.x * 96, map.y * 96, "SO_LONG", true);
 	if (!map.mlx)
 		so_error(&map, 3);
-	map_init(&map);
+	map_build(&map);
 	map_depth(&map);
 	mlx_key_hook(map.mlx, &move, &map);
 	mlx_loop(map.mlx);
