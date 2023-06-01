@@ -28,11 +28,13 @@ typedef struct
 	int			move;
 }	t_map;
 
-int map_size(t_map *map_info);
-int	map_line_len(char *str, t_map *map);
-int	line_count(int fd);
 char**	map_init_char(int fd, int size);
+void	so_error(t_map *map, int i);
 void	collect_ext(t_map *map);
-int	check_there(t_map *map, char object, int x, int y);
+int		check_there(t_map *map, char object, int x, int y);
+int		map_line_len(char *str, t_map *map);
+int 	map_size(t_map *map_info);
+int		line_count(int fd);
+void	free_ber(char **ber);
 
 #endif

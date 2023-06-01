@@ -9,7 +9,7 @@ SRC = $(wildcard src/*.c)
 all: $(MLXarc) $(libft) so_long
 
 so_long:
-	@gcc -o $@ $(SRC) $(MLXarc) $(libft) -I./ $(MAC_flgs)
+	@gcc -o $@ $(SRC) $(MLXarc) $(libft) -I ./ $(MAC_flgs)
 
 $(libft):
 	@make -C libft

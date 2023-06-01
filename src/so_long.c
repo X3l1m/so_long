@@ -13,6 +13,8 @@ int map_to_window(t_map *map, char c, int y, int x)
 	else if(c == '0' || c == 'P' || c == 'E' || c == 'C')
 	{
 		i = mlx_image_to_window(map->mlx, map->space, x, y);
+		if (i < 0)
+			return (i);
 		if(c == 'C')
 			i = mlx_image_to_window(map->mlx, map->collect, x, y);
 		else if(c == 'P')
@@ -42,9 +44,11 @@ void	texture_to_image(t_map *map)
 	texture = mlx_load_png("./textures/collect.png");
 	map->collect = mlx_texture_to_image(map->mlx, texture);
 	mlx_delete_texture(texture);
+	if (!map->wall || !map->space || !map->player || !map->ext || !map->collect || !texture)
+		so_error(map, 2);
 }
 
-int	map_init(t_map *map)
+void	map_init(t_map *map)
 {
 	int y;
 	int x;
@@ -57,12 +61,11 @@ int	map_init(t_map *map)
 		while (map->x > x)
 		{
 			if(map_to_window(map, map->ber[y][x], y, x) < 0)
-				return (0);
+				so_error(map, 2);
 			x++;
 		}
 		y++;
 	}
-	return (1);
 }
 
 void	map_depth(t_map *map)
@@ -84,82 +87,122 @@ void	map_depth(t_map *map)
 
 
 
-void	move_up(t_map *map)
+
+
+char	**goever(char **ber_c, int x, int y)
 {
-	if(check_there(map, '1', 0, -1))
-		return ;
-	map->player->instances[0].y -= 96;
-	map->move++;
-	ft_printf("%d\n", map->move);
-	collect_ext(map);
-}
-
-void	move_donw(t_map *map)
-{
-	if(check_there(map, '1', 0, 1))
-		return ;
-	map->player->instances[0].y += 96;
-	map->move++;
-	ft_printf("%d\n", map->move);
-	collect_ext(map);
-}
-
-void	move_right(t_map *map)
-{
-	if(check_there(map, '1', 1, 0))
-		return ;
-	map->player->instances[0].x += 96;
-	map->move++;
-	ft_printf("%d\n", map->move);
-	collect_ext(map);
-}
-
-void	move_left(t_map *map)
-{
-	if(check_there(map, '1', -1, 0))
-		return ;
-	map->player->instances[0].x -= 96;
-	map->move++;
-	ft_printf("%d\n", map->move);
-	collect_ext(map);
-}
-
-
-void	move(mlx_key_data_t key, void* param)
-{
-	t_map *map;
-
-	map = param;
-	if (key.action == MLX_PRESS)
+	if (ber_c[y][x] != '1')
 	{
-		if(key.key == MLX_KEY_UP)
-			move_up(map);
-		else if(key.key == MLX_KEY_DOWN)
-			move_donw(map);
-		else if(key.key == MLX_KEY_RIGHT)
-			move_right(map);
-		else if(key.key == MLX_KEY_LEFT)
-			move_left(map);
-		else if(key.key == MLX_KEY_ESCAPE)
-			mlx_close_window(map->mlx);
+		if (ber_c[y][x] != '1')
+			ber_c[y][x] = '1';
+		else
+			return (ber_c);
+		goever(ber_c, x + 1, y);
+		goever(ber_c, x - 1, y);
+		goever(ber_c, x, y + 1);
+		goever(ber_c, x, y - 1);
+	}
+	return (ber_c);
+}
+
+int	nongo(char **ber_c)
+{
+	int	x;
+	int	y;
+
+	y = 0;
+	while (ber_c[y])
+	{
+		x = 0;
+		while (ber_c[y][x])
+		{
+			if (ber_c[y][x] != '0' && ber_c[y][x] != '1')
+				return (0);
+			x++;
+		}
+		y++;
+	}
+	return (1);
+}
+
+char **mapdup(t_map *map)
+{
+	char **ber_c;
+	int i;
+
+	i = 0;
+	ber_c = ft_calloc(map->y + 1, sizeof(char*));
+	if (!ber_c)
+		exit(1);
+	while (map->ber[i])
+	{
+		ber_c[i] = ft_strdup(map->ber[i]);
+		i++;
+	}
+	return (ber_c);
+}
+
+void	find_player(char **ber_c, int *x, int *y)
+{
+	*y = 0;
+	while (ber_c[*y])
+	{
+		*x = 0;
+		while (ber_c[*y][*x])
+		{
+			if (ber_c[*y][*x] == 'P')
+				return ;
+			(*x)++;
+		}
+		(*y)++;
 	}
 }
 
+void	free_ber(char **ber)
+{
+	int	i;
 
-int	main()
+	i = 0;
+	while (ber[i])
+		free(ber[i++]);
+	free(ber);
+}
+
+void	check_stuck(t_map *map)
+{
+	char	**ber_c;
+	int		x;
+	int		y;
+	int		er;
+
+	ber_c = mapdup(map);
+	find_player(ber_c, &x, &y);
+	er = nongo(goever(ber_c, x, y));
+	free_ber(ber_c);
+	if (!er)
+		so_error(map, 1);
+}
+
+int	main(int argc, char **argv)
 {
 	t_map	map;
-	
+	int		fd;
 
-	map.ber = map_init_char(open("./map.ber", O_RDONLY), line_count(open("./map.ber", O_RDONLY)));
-	if(!map_size(&map))
-		return (1);
+	if (argc != 2)
+		so_error(&map, 0);
+	fd = open(argv[1], O_RDONLY);
+	if (fd < 0)
+		so_error(&map, 0);
+	map.ber = map_init_char(open(argv[1], O_RDONLY), line_count(fd));
+	map_size(&map);
+	check_stuck(&map);
 	map.mlx = mlx_init(map.x * 96, map.y * 96, "SO_LONG", true);
+	if (!map.mlx)
+		so_error(&map, 3);
 	map_init(&map);
 	map_depth(&map);
-	
 	mlx_key_hook(map.mlx, &move, &map);
 	mlx_loop(map.mlx);
 	mlx_terminate(map.mlx);
-	system("leaks so_long");
+	return (EXIT_SUCCESS);
 }
