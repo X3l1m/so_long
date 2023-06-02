@@ -12,22 +12,29 @@
 
 NAME = so_long
 
+OS = $(shell uname)
+CFLAGS = -I./ -Wall -Werror -Wextra
 MLXarc = MLX42/build/libmlx42.a
-libft = libft/libft.a
-
-MAC_flgs = -lglfw3 -framework Cocoa -framework OpenGL -framework IOKit
-LNX_flgs = -lglfw
-Error = -g -fsanitize=address
-RM = rm -f
+LIBFT = libft/libft.a
 SRC = $(wildcard src/*.c)
+RM = rm -f
 
-all: $(MLXarc) $(libft) $(NAME)
+ifeq ($(OS), Darwin)
+	CFLAGS += -lglfw3 -framework Cocoa -framework OpenGL -framework IOKit
+endif
+
+ifeq ($(OS), Linux)
+	CFLAGS += -lglfw -ldl -pthread -lm
+endif
+
+
+all: $(MLXarc) $(LIBFT) $(NAME)
 
 $(NAME):
-	@gcc -o $@ $(SRC) $(MLXarc) $(libft) -I ./ $(MAC_flgs)
+	@gcc -o $@ $(SRC) $(MLXarc) $(LIBFT) $(CFLAGS)
 	@echo $(NAME) creating...
 
-$(libft):
+$(LIBFT):
 	@make -C libft
 
 $(MLXarc):
@@ -40,8 +47,13 @@ fclean:
 
 clean:
 	@make -C libft clean
-	@@$(RM) $(NAME)
+	@$(RM) $(NAME)
 
 re: fclean all
+
+so_clean:
+	@$(RM) $(NAME)
+
+so_re: so_clean $(NAME)
 
 .PHONY: fclean clean re all
