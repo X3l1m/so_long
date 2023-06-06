@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:28:05 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/01 22:28:05 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/03 21:21:13 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,15 +57,15 @@ void	move(mlx_key_data_t key, void *param)
 	t_map	*map;
 
 	map = param;
-	if (key.action == MLX_PRESS)
+	if (key.action == MLX_PRESS || key.action == MLX_REPEAT)
 	{
-		if (key.key == MLX_KEY_UP)
+		if (key.key == MLX_KEY_W || key.key == MLX_KEY_UP)
 			move_up(map);
-		else if (key.key == MLX_KEY_DOWN)
+		else if (key.key == MLX_KEY_S || key.key == MLX_KEY_DOWN)
 			move_donw(map);
-		else if (key.key == MLX_KEY_RIGHT)
+		else if (key.key == MLX_KEY_D || key.key == MLX_KEY_RIGHT)
 			move_right(map);
-		else if (key.key == MLX_KEY_LEFT)
+		else if (key.key == MLX_KEY_A || key.key == MLX_KEY_LEFT)
 			move_left(map);
 		else if (key.key == MLX_KEY_ESCAPE)
 			mlx_close_window(map->mlx);

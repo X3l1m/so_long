@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:21:41 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/01 22:21:41 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/03 20:33:42 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	texture_to_image(t_map *map)
 	mlx_delete_texture(texture);
 	if (!map->wall || !map->space || !map->player
 		|| !map->ext || !map->collect || !texture)
-		so_error(map, 2);
+		mlx_err(map);
 }
 
 void	map_build(t_map *map)
@@ -73,7 +73,7 @@ void	map_build(t_map *map)
 		while (map->x > x)
 		{
 			if (map_to_window(map, map->ber[y][x], y, x) < 0)
-				so_error(map, 2);
+				mlx_err(map);
 			x++;
 		}
 		y++;

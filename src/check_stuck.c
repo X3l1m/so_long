@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:29:23 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/01 22:29:23 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/03 20:25:37 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,5 +97,5 @@ void	check_stuck(t_map *map)
 		free(ber_c[i++]);
 	free(ber_c);
 	if (!err)
-		so_error(map, 1);
+		so_error(1);
 }

@@ -31,7 +31,7 @@ endif
 all: $(MLXarc) $(LIBFT) $(NAME)
 
 $(NAME):
-	@gcc -o $@ $(SRC) $(MLXarc) $(LIBFT) $(CFLAGS)
+	@gcc -g -o $@ $(SRC) $(MLXarc) $(LIBFT) $(CFLAGS)
 	@echo $(NAME) creating...
 
 $(LIBFT):

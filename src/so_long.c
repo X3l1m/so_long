@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:29:14 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/01 22:29:14 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/03 20:44:30 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,20 +49,16 @@ char	**ber_read(int fd, int size)
 	return (ber);
 }
 
-void	so_error(t_map *map, int i)
+void	check_ber_name(char *str)
 {
-	if (i == 0)
-		ft_printf("Incorrect input!\n");
-	else if (i == 1)
-		ft_printf("Invalid map!\n");
-	else if (i == 2)
+	while (*str != '.')
 	{
-		mlx_close_window(map->mlx);
-		ft_printf("%s", mlx_strerror(mlx_errno));
+		str++;
+		if (!*str)
+			so_error(0);
 	}
-	else if (i == 3)
-		ft_printf("%s", mlx_strerror(mlx_errno));
-	exit(EXIT_FAILURE);
+	if(ft_strcmp(str, ".ber"))
+		so_error(0);
 }
 
 int	main(int argc, char **argv)
@@ -71,16 +67,19 @@ int	main(int argc, char **argv)
 	int		fd;
 
 	if (argc != 2)
-		so_error(&map, 0);
+		so_error(0);
+	check_ber_name(argv[1]);
 	fd = open(argv[1], O_RDONLY);
 	if (fd < 0)
-		so_error(&map, 0);
+		so_error(0);
 	map.ber = ber_read(open(argv[1], O_RDONLY), line_count(fd));
+	if (!map.ber)
+		return (1);
 	map_init(&map);
 	check_stuck(&map);
 	map.mlx = mlx_init(map.x * 96, map.y * 96, "SO_LONG", true);
 	if (!map.mlx)
-		so_error(&map, 3);
+		so_error(2);
 	map_build(&map);
 	map_depth(&map);
 	mlx_key_hook(map.mlx, &move, &map);

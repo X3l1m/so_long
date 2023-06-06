@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:26:57 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/01 22:26:57 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/03 20:26:46 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ void	object_count(char c, t_map *map)
 			map->e_cnt++;
 	}
 	else
-		so_error(map, 1);
+		so_error(1);
 	if (map->p_cnt > 1 || map->e_cnt > 1)
-		so_error(map, 1);
+		so_error(1);
 }
 
 int	map_line_len(char *str, t_map *map)
@@ -59,9 +59,9 @@ void	surround_wall(t_map *map)
 		while (map->ber[y][x])
 		{
 			if ((y == 0 || y == (map->y - 1)) && map->ber[y][x] != '1')
-				so_error(map, 1);
+				so_error(1);
 			if ((x == 0 || x == (map->x - 1)) && map->ber[y][x] != '1')
-				so_error(map, 1);
+				so_error(1);
 			x++;
 		}
 		y++;
@@ -85,14 +85,14 @@ int	map_init(t_map *map)
 	{
 		i = map_line_len(map->ber[map->y], map);
 		if ((i != map->x && map->y))
-			so_error(map, 1);
+			so_error(1);
 		map->x = i;
 		map->y++;
 	}
 	if (map->x < 3 || map->y < 3)
-		so_error(map, 1);
+		so_error(1);
 	if (map->p_cnt < 1 || map->e_cnt < 1 || map->c_cnt < 1 || map->w_cnt < 7)
-		so_error(map, 1);
+		so_error(1);
 	surround_wall(map);
 	return (1);
 }
