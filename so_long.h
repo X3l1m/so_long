@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:35:49 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/01 22:35:49 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/03 20:33:49 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,16 @@ char	**mapdup(t_map *map);
 void	find_player(char **ber_c, int *x, int *y);
 void	check_stuck(t_map *map);
 int		nongo(char **ber_c);
-//error exit
-void	so_error(t_map *map, int i);
+//error
+void	so_error(int i);
+void	mlx_err(t_map *map);
 //move
 void	move(mlx_key_data_t key, void	*param);
 //collect
 int		check_there(t_map *map, char object, int x, int y);
 void	change_ber(t_map *map, int x, int y);
 void	collect_ext(t_map *map);
+//free map
+void	str_free(char **str);
 
 #endif

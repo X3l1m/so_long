@@ -57,8 +57,18 @@ void	check_ber_name(char *str)
 		if (!*str)
 			so_error(0);
 	}
-	if(ft_strcmp(str, ".ber"))
+	if (ft_strcmp(str, ".ber"))
 		so_error(0);
+}
+
+void	str_free(char **str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+		free(str[i++]);
+	free(str);
 }
 
 int	main(int argc, char **argv)
@@ -73,8 +83,6 @@ int	main(int argc, char **argv)
 	if (fd < 0)
 		so_error(0);
 	map.ber = ber_read(open(argv[1], O_RDONLY), line_count(fd));
-	if (!map.ber)
-		return (1);
 	map_init(&map);
 	check_stuck(&map);
 	map.mlx = mlx_init(map.x * 96, map.y * 96, "SO_LONG", true);
@@ -85,5 +93,6 @@ int	main(int argc, char **argv)
 	mlx_key_hook(map.mlx, &move, &map);
 	mlx_loop(map.mlx);
 	mlx_terminate(map.mlx);
+	str_free(map.ber);
 	return (EXIT_SUCCESS);
 }

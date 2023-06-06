@@ -85,17 +85,13 @@ void	check_stuck(t_map *map)
 {
 	char	**ber_c;
 	int		err;
-	int		i;
 	int		x;
 	int		y;
 
-	i = 0;
 	ber_c = mapdup(map);
 	find_player(ber_c, &x, &y);
 	err = nongo(goever(ber_c, x, y));
-	while (ber_c[i])
-		free(ber_c[i++]);
-	free(ber_c);
+	str_free(ber_c);
 	if (!err)
 		so_error(1);
 }
