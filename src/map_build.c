@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:21:41 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/03 20:33:42 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/21 13:39:30 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,28 +36,46 @@ int	map_to_window(t_map *map, char c, int y, int x)
 	return (i);
 }
 
-void	texture_to_image(t_map *map)
+void	texture_to_image1(t_map *map)
 {
 	mlx_texture_t	*texture;
 
 	texture = mlx_load_png("./textures/wall.png");
+	if (!texture)
+		mlx_err(map);
 	map->wall = mlx_texture_to_image(map->mlx, texture);
 	mlx_delete_texture(texture);
 	texture = mlx_load_png("./textures/space.png");
+	if (!texture)
+		mlx_err(map);
 	map->space = mlx_texture_to_image(map->mlx, texture);
 	mlx_delete_texture(texture);
+	if (!map->wall || !map->space)
+		mlx_err(map);
+}
+
+void	texture_to_image(t_map *map)
+{
+	mlx_texture_t	*texture;
+
 	texture = mlx_load_png("./textures/player.png");
+	if (!texture)
+		mlx_err(map);
 	map->player = mlx_texture_to_image(map->mlx, texture);
 	mlx_delete_texture(texture);
 	texture = mlx_load_png("./textures/exit_close.png");
+	if (!texture)
+		mlx_err(map);
 	map->ext = mlx_texture_to_image(map->mlx, texture);
 	mlx_delete_texture(texture);
 	texture = mlx_load_png("./textures/collect.png");
+	if (!texture)
+		mlx_err(map);
 	map->collect = mlx_texture_to_image(map->mlx, texture);
 	mlx_delete_texture(texture);
-	if (!map->wall || !map->space || !map->player
-		|| !map->ext || !map->collect || !texture)
+	if (!map->player || !map->ext || !map->collect)
 		mlx_err(map);
+	texture_to_image1(map);
 }
 
 void	map_build(t_map *map)
