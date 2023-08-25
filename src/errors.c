@@ -6,11 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/15 14:57:24 by seyildir      #+#    #+#                 */
-<<<<<<< HEAD
 /*   Updated: 2023/06/21 18:12:45 by seyildir      ########   odam.nl         */
-=======
-/*   Updated: 2023/06/15 14:57:24 by seyildir      ########   odam.nl         */
->>>>>>> 278adf90d51532ffa7a655cfe6e369ee851ada97
 /*                                                                            */
 /* ************************************************************************** */
 
