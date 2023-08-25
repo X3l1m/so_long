@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:29:14 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/03 20:44:30 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/21 18:16:22 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ char	**ber_read(int fd, int size)
 	if (!ber)
 		exit (1);
 	while (1)
-	{	
+	{
 		ber[i] = get_next_line(fd);
 		if (!ber[i++])
 			break ;
@@ -85,7 +85,7 @@ int	main(int argc, char **argv)
 	map.ber = ber_read(open(argv[1], O_RDONLY), line_count(fd));
 	map_init(&map);
 	check_stuck(&map);
-	map.mlx = mlx_init(map.x * 96, map.y * 96, "SO_LONG", true);
+	map.mlx = mlx_init(map.x * 96, map.y * 96, "SO_LONG", false);
 	if (!map.mlx)
 		so_error(2);
 	map_build(&map);

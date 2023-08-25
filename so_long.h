@@ -6,12 +6,12 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:35:49 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/03 20:33:49 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/21 18:15:44 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SO_LONG_H
-# define  SO_LONG_H
+# define SO_LONG_H
 
 # include "libft/libft.h"
 # include "MLX42/include/MLX42/MLX42.h"
@@ -41,7 +41,7 @@ typedef struct s_map
 }	t_map;
 
 //map init
-int		map_init(t_map *map);
+void	map_init(t_map *map);
 //map build
 void	map_build(t_map *map);
 void	map_depth(t_map *map);

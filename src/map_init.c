@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:26:57 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/03 20:26:46 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/21 18:15:15 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	surround_wall(t_map *map)
 
 	y = 0;
 	while (map->ber[y])
-	{	
+	{
 		x = 0;
 		while (map->ber[y][x])
 		{
@@ -68,7 +68,7 @@ void	surround_wall(t_map *map)
 	}
 }
 
-int	map_init(t_map *map)
+void	map_init(t_map *map)
 {
 	int	i;
 
@@ -94,5 +94,4 @@ int	map_init(t_map *map)
 	if (map->p_cnt < 1 || map->e_cnt < 1 || map->c_cnt < 1 || map->w_cnt < 7)
 		so_error(1);
 	surround_wall(map);
-	return (1);
 }

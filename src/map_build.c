@@ -6,7 +6,7 @@
 /*   By: seyildir <seyildir@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/06/01 22:21:41 by seyildir      #+#    #+#                 */
-/*   Updated: 2023/06/03 20:33:42 by seyildir      ########   odam.nl         */
+/*   Updated: 2023/06/21 18:17:25 by seyildir      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,27 +36,16 @@ int	map_to_window(t_map *map, char c, int y, int x)
 	return (i);
 }
 
-void	texture_to_image(t_map *map)
+void	texture_to_image(t_map *map, mlx_image_t **image, const char *png)
 {
 	mlx_texture_t	*texture;
 
-	texture = mlx_load_png("./textures/wall.png");
-	map->wall = mlx_texture_to_image(map->mlx, texture);
+	texture = mlx_load_png(png);
+	if (!texture)
+		mlx_err(map);
+	*image = mlx_texture_to_image(map->mlx, texture);
 	mlx_delete_texture(texture);
-	texture = mlx_load_png("./textures/space.png");
-	map->space = mlx_texture_to_image(map->mlx, texture);
-	mlx_delete_texture(texture);
-	texture = mlx_load_png("./textures/player.png");
-	map->player = mlx_texture_to_image(map->mlx, texture);
-	mlx_delete_texture(texture);
-	texture = mlx_load_png("./textures/exit_close.png");
-	map->ext = mlx_texture_to_image(map->mlx, texture);
-	mlx_delete_texture(texture);
-	texture = mlx_load_png("./textures/collect.png");
-	map->collect = mlx_texture_to_image(map->mlx, texture);
-	mlx_delete_texture(texture);
-	if (!map->wall || !map->space || !map->player
-		|| !map->ext || !map->collect || !texture)
+	if (!*image)
 		mlx_err(map);
 }
 
@@ -66,7 +55,11 @@ void	map_build(t_map *map)
 	int	x;
 
 	y = 0;
-	texture_to_image(map);
+	texture_to_image(map, &map->wall, "./textures/wall.png");
+	texture_to_image(map, &map->space, "./textures/space.png");
+	texture_to_image(map, &map->player, "./textures/player.png");
+	texture_to_image(map, &map->ext, "./textures/exit_close.png");
+	texture_to_image(map, &map->collect, "./textures/collect.png");
 	while (map->y > y)
 	{
 		x = 0;
