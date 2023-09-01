@@ -26,7 +26,9 @@ void	so_error(int i)
 
 void	mlx_err(t_map *map)
 {
+	str_free(map->ber);
 	mlx_close_window(map->mlx);
+	mlx_terminate(map->mlx);
 	ft_putstr_fd((char *)mlx_strerror(mlx_errno), STDERR_FILENO);
 	write(1, "\n", STDERR_FILENO);
 	exit(1);
