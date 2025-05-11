@@ -12,41 +12,12 @@
 
 #include <so_long.h>
 
-void	move_up(t_map *map)
+void	move_direction(t_map *map, int dx, int dy)
 {
-	if (check_there(map, '1', 0, -1))
+	if (check_there(map, '1', dx, dy))
 		return ;
-	map->player->instances[0].y -= 96;
-	map->move++;
-	ft_printf("%d\n", map->move);
-	collect_ext(map);
-}
-
-void	move_donw(t_map *map)
-{
-	if (check_there(map, '1', 0, 1))
-		return ;
-	map->player->instances[0].y += 96;
-	map->move++;
-	ft_printf("%d\n", map->move);
-	collect_ext(map);
-}
-
-void	move_right(t_map *map)
-{
-	if (check_there(map, '1', 1, 0))
-		return ;
-	map->player->instances[0].x += 96;
-	map->move++;
-	ft_printf("%d\n", map->move);
-	collect_ext(map);
-}
-
-void	move_left(t_map *map)
-{
-	if (check_there(map, '1', -1, 0))
-		return ;
-	map->player->instances[0].x -= 96;
+	map->player->instances[0].x += dx * 96;
+	map->player->instances[0].y += dy * 96;
 	map->move++;
 	ft_printf("%d\n", map->move);
 	collect_ext(map);
@@ -60,13 +31,13 @@ void	move(mlx_key_data_t key, void *param)
 	if (key.action == MLX_PRESS || key.action == MLX_REPEAT)
 	{
 		if (key.key == MLX_KEY_W || key.key == MLX_KEY_UP)
-			move_up(map);
+			move_direction(map, 0, -1);
 		else if (key.key == MLX_KEY_S || key.key == MLX_KEY_DOWN)
-			move_donw(map);
+			move_direction(map, 0, 1);
 		else if (key.key == MLX_KEY_D || key.key == MLX_KEY_RIGHT)
-			move_right(map);
+			move_direction(map, 1, 0);
 		else if (key.key == MLX_KEY_A || key.key == MLX_KEY_LEFT)
-			move_left(map);
+			move_direction(map, -1, 0);
 		else if (key.key == MLX_KEY_ESCAPE)
 			mlx_close_window(map->mlx);
 	}
